@@ -543,12 +543,14 @@ jobs:
       - run:
           name: Tag docker image
           command: |
-            docker tag os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:latest $DOCKER_LOGIN/os-alpine:3.8
+            docker tag os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:latest
+            docker tag os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8
 
       - run:
           name: Publish docker image
           command: |
-            docker push $DOCKER_LOGIN/os-alpine
+            docker push $DOCKER_LOGIN/os-alpine:latest
+            docker push $DOCKER_LOGIN/os-alpine:3.8
 
 
 
