@@ -1,0 +1,575 @@
+version: 2.1
+
+
+## base conf
+
+references:
+  workspace_root: &workspace_root
+    /tmp/workspace
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
+orbs:
+  docker-publish: circleci/docker-publish@0.1.2
+  slack: circleci/slack@1.0.0
+
+executors:
+  node-executor:
+    docker:
+      - image: circleci/node:10.14.1-browsers
+        user: root
+    # environment:
+    #   CC_TEST_REPORTER_ID: 495302278153b95fae5fd910eeec440bf8bf27bec8e14c5afcca43beed03d3c2
+    working_directory: ~/project
+
+  alpine-executor:
+    docker:
+      - image: alpine:3.8
+        user: root
+    working_directory: ~/project
+
+  python-executor:
+    docker:
+      - image: python:3.7.1
+        user: root
+    working_directory: ~/project
+
+  machine-executor:
+    description: TODO
+    machine: true
+    working_directory: ~/project
+
+  docker-executor:
+    description: TODO
+    docker:
+      - image: docker:18.06.1-ce-git
+        user: root
+    working_directory: ~/project
+
+commands:
+  executor-alpine-setup-dependencies:
+    description: "Alpine image dependencies install"
+    steps:
+      - run:
+          name: Package manager | update list of available packages
+          command: apk update
+
+      - run:
+          name: Package manager | install packages
+          command: |
+            apk add build-base
+            apk add coreutils
+            apk add zip
+            apk add curl
+            apk add jemalloc-dev
+            apk add linux-headers
+            apk add cmake
+            apk add ca-certificates
+            apk add bash
+            apk add tcl
+            apk add moreutils --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/
+
+      - run:
+          name: python / pip install
+          command: |
+            apk add jq
+            apk add py-pip
+            pip install yq
+
+  executor-python-setup-dependencies:
+    description: "Python image dependencies install"
+    parameters:
+      command-prefix:
+        type: string
+        default: ""
+
+    steps:
+      - run:
+          name: Package manager | update list of available packages
+          command: << parameters.command-prefix >> apt update
+
+      - run:
+          name: Package manager | install packages
+          command: |
+            << parameters.command-prefix >> apt install jq -y
+            << parameters.command-prefix >> apt install build-essential -y
+            << parameters.command-prefix >> apt install cmake -y
+            << parameters.command-prefix >> apt install zip -y
+            << parameters.command-prefix >> apt install libatlas-base-dev -y
+            << parameters.command-prefix >> apt install moreutils -y
+            << parameters.command-prefix >> apt install python-dev -y
+            << parameters.command-prefix >> pip install yq
+
+  executor-env-variables:
+    description: "Prepare env Variables"
+    parameters:
+      env-file-name:
+        type: string
+        default: "new-env-vars"
+    steps:
+      - run:
+          name: Integrating env parameters from << parameters.env-file-name >> into BASH_ENV
+          command: |
+            cat /tmp/workspace/<< parameters.env-file-name >> >> $BASH_ENV
+
+  libs-external-create-config:
+    description: "TBA"
+    parameters:
+      base-build-dir:
+        type: string
+        default: ~/project
+      lib-name:
+        type: string
+      lib-category:
+        type: string
+        default: libs
+    steps:
+      - run:
+          name: Create << parameters.lib-name >> parameters file
+          command: |
+            > lib.config
+            echo $(yq .<< parameters.lib-category >>.<< parameters.lib-name >>.github /tmp/workspace/config.yaml) >>lib.config
+
+  libs-external-get:
+    description: "TBA"
+    parameters:
+      base-cache-key:
+        type: string
+        default: external-dependencies-package-cache
+      base-cache-prefix:
+        type: string
+        default: v032
+      lib-github-org:
+        type: string
+        default: RedisLabsModules
+      lib-name:
+        type: string
+        default: rejson
+      lib-release:
+        type: string
+      lib-release-package-extension:
+        type: string
+        default: zip
+      lib-category:
+        type: string
+        default: libs
+    steps:
+      - run:
+          name: Create << parameters.lib-name >> parameters
+          command: |
+            > lib.version
+            echo "base-cache-prefix=<< parameters.base-cache-prefix >>" >>lib.version
+            echo "lib-github-org=<< parameters.lib-github-org >>" >>lib.version
+            echo "lib-name=<< parameters.lib-name >>" >>lib.version
+            echo "lib-release=<< parameters.lib-release >>" >>lib.version
+            echo "lib-release-package-extension=<< parameters.lib-release-package-extension >>" >>lib.version
+            echo "lib-category=<< parameters.lib-category >>" >>lib.version
+            cat lib.version
+
+      - restore_cache:
+          key: << parameters.base-cache-key >>-<< parameters.base-cache-prefix >>-<< parameters.lib-name >>-{{ checksum "lib.version" }}
+
+      # - run:
+      #     name: exit 2
+      #     command: |
+      #       ls /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>
+      #       yq -y '.<< parameters.lib-category >>.<< parameters.lib-name >>.cacheStatus.packageDownload=true' config.yaml | sponge config.yaml
+      #       cat config.yaml
+      #       exit 2
+
+      - run:
+          name: Create << parameters.lib-name >> workspace download directory
+          command: mkdir -p /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>
+
+      - run:
+          name: Get << parameters.lib-name >> tag from Github
+          command: |
+            test -e /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>/<< parameters.lib-name >>.<< parameters.lib-release-package-extension >> \
+            && echo file exists, skipping \
+            || \
+            (wget -O /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>/<< parameters.lib-name >>.<< parameters.lib-release-package-extension >> https://github.com/<< parameters.lib-github-org >>/<< parameters.lib-name >>/archive/<< parameters.lib-release >>.<< parameters.lib-release-package-extension >> && \
+            cp ~/project/lib.version /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>/ && \
+            cd /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >> && \
+            echo "lib-package=<< parameters.lib-name >>.<< parameters.lib-release-package-extension >>" >>lib.version && \
+            echo "lib-package-sha256=$(sha256sum << parameters.lib-name >>.<< parameters.lib-release-package-extension >>  | cut -d " " -f 1)" >>lib.version)
+
+      ## TODO test file existance before cache save
+
+      - save_cache:
+          key: << parameters.base-cache-key >>-<< parameters.base-cache-prefix >>-<< parameters.lib-name >>-{{ checksum "lib.version" }}
+          paths:
+            - /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>/
+
+      # - run:
+      #     command: |
+      #       ls /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>/
+      #       cat /tmp/workspace/download/<< parameters.lib-category >>/<< parameters.lib-name >>/lib.version
+
+  libs-external-unpack:
+    description: "TBA"
+    parameters:
+      base-workplace-download-dir:
+        type: string
+        default: /tmp/workspace/download
+      base-build-dir:
+        type: string
+        default: ~/project/build
+      base-cache-prefix:
+        type: string
+        default: v01
+      lib-github-org:
+        type: string
+        default: RedisLabsModules
+      lib-name:
+        type: string
+        default: rejson
+      lib-release-package-extension:
+        type: string
+        default: zip
+      lib-category:
+        type: string
+        default: libs
+      cache-available:
+        type: string
+        default: false
+    steps:
+      - run:
+          name: Cache status check
+          command: |
+            echo << parameters.cache-available >>
+            test << parameters.cache-available >> = true && echo Cache available, skipping subsequent steps. || echo Cache not available, continuing processing
+
+      - run:
+          name: Create << parameters.lib-name >> build directory
+          command: mkdir -p << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+
+      # - run:
+      #     name: status
+      #     command: |
+      #       echo << parameters.base-workplace-download-dir >>
+      #       echo << parameters.base-build-dir >>
+
+      - run:
+          name: Unpack << parameters.lib-name >>
+          command: |
+            unzip -q << parameters.base-workplace-download-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>/<< parameters.lib-name >>.zip -d << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+            mv -f << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>/**/* << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+
+      # - run:
+      #     name: exit 1
+      #     command: |
+      #       ls << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+
+      # - run:
+      #     name: exit 2
+      #     command: |
+      #       exit 2
+
+  libs-external-make:
+    description: "TBA"
+    parameters:
+      base-workplace-compiled-dir:
+        type: string
+        default: /tmp/workspace/compiled
+      base-workplace-compiled-type:
+        type: string
+        default: modules
+      base-build-dir:
+        type: string
+        default: ~/project/build
+      base-cache-key:
+        type: string
+        default: external-dependencies-compile-cache
+      base-cache-prefix:
+        type: string
+        default: v01
+      lib-github-org:
+        type: string
+        default: RedisLabsModules
+      lib-name:
+        type: string
+        default: rejson
+      lib-release-package-extension:
+        type: string
+        default: zip
+      lib-category:
+        type: string
+        default: libs
+      lib-build-dir:
+        type: string
+        default: ''
+      make-params:
+        type: string
+        default: ''
+      pre-make-command:
+        type: string
+        default: echo null
+    steps:
+      - libs-external-create-config:
+          lib-name: << parameters.lib-name >>
+          lib-category: << parameters.lib-category >>
+
+      - run:
+          name: Create << parameters.lib-name >> parameters
+          command: |
+            > lib.config
+            echo $(yq .<< parameters.lib-category >>.<< parameters.lib-name >>.github /tmp/workspace/config.yaml) >>lib.config
+            cat lib.config
+
+      - restore_cache:
+          key: << parameters.base-cache-key >>-<< parameters.base-cache-prefix >>-<< parameters.lib-name >>-{{ checksum "lib.config" }}
+
+      # - run:
+      #     name: exit 2
+      #     command: |
+      #       yq -y '.<< parameters.lib-category >>.<< parameters.lib-name >>.cacheStatus.packageDownload=true' config.yaml | sponge config.yaml
+      #       cat config.yaml
+
+
+      - libs-external-unpack:
+          lib-name: << parameters.lib-name >>
+          cache-available: $(yq -r .<< parameters.lib-category >>.<< parameters.lib-name >>.cacheStatus.packageDownload config.yaml)
+
+      # - run:
+      #     name: status1
+      #     command: |
+      #       test -e << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >> \
+      #       && ls << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >> ||
+      #       echo file doesnt exist, skipping
+
+      - run:
+          name: Build << parameters.lib-name >>
+          command: |
+            test -e << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >> \
+            && (echo compiled exists, skipping && exit 0) || \
+            (<< parameters.pre-make-command >> && make -C << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>/<< parameters.lib-build-dir >> << parameters.make-params >>)
+
+      - run:
+          name: Copy compiled module to workspace
+          command: |
+            test -e << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >> \
+            && (echo compiled exists, skipping && exit 0) || \
+            (mkdir -p << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >>
+            cp << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>/**/*.so << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >>)
+
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - compiled/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >>
+
+      - save_cache:
+          key: << parameters.base-cache-key >>-<< parameters.base-cache-prefix >>-<< parameters.lib-name >>-{{ checksum "lib.config" }}
+          paths:
+            - << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >>
+
+
+      # - run:
+      #     name: status2
+      #     command: |
+      #       ls << parameters.base-workplace-compiled-dir >>/<< parameters.base-workplace-compiled-type >>/<< parameters.lib-name >>
+
+
+      # - run:
+      #     name: QQQQ
+      #     command: |
+      #       exit 2
+
+      # - run:
+      #     name: Create << parameters.lib-name >> build directory
+      #     command: mkdir -p << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+
+      # - run:
+      #     name: status
+      #     command: |
+      #       echo << parameters.base-workplace-download-dir >>
+      #       echo << parameters.base-build-dir >>
+
+      # - run:
+      #     name: Unpack << parameters.lib-name >>
+      #     command: |
+      #       unzip -q << parameters.base-workplace-download-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>/<< parameters.lib-name >>.zip -d << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+      #       mv -f << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>/**/* << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+
+      # - run:
+      #     name: exit 1
+      #     command: |
+      #       ls << parameters.base-build-dir >>/<< parameters.lib-category >>/<< parameters.lib-name >>
+
+      # - run:
+      #     name: exit 2
+      #     command: |
+      #       exit 2
+
+jobs:
+
+  ## Preparation jobs ##
+
+  base:
+    executor: docker-executor
+
+    steps:
+      - executor-alpine-setup-dependencies
+
+      - *attach_workspace
+
+      - checkout
+
+      - run:
+          name: Check project configuration file existance
+          description: This step checks if the project configuration file is present and not empty.
+          command: |
+            if [[ ! -s config.yaml ]]; then
+                echo "Project configuration file not present or empty."
+                exit 1
+            fi
+
+      - run:
+          name: Move project configuration file into workspace
+          description: |
+            At this point, the project configuration is moved into the base workspace folder
+            for persistence thru the workflow. The workspace directory is outside the base project
+            directory to accommodate different base image structures and user permission differences
+            thru workflow steps.
+          command: |
+            cp config.yaml /tmp/workspace
+
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - config.yaml
+
+      - setup_remote_docker
+
+      - run:
+          name: Check Docker related Variables
+          description: TODO
+          command: |
+            if [[ $(yq -r .docker.registry /tmp/workspace/config.yaml) == null ]]; then
+                echo "Docker registry value is not set in project configuration, docker image would not \
+                be remotely deployable. Please review the configuration"
+                exit 1
+            fi
+
+            if [[ $(yq -r .docker.repoName /tmp/workspace/config.yaml) == null ]]; then
+                echo "Docker repository name value is not set in project configuration, docker image would not \
+                be remotely deployable. Please review the configuration"
+                exit 1
+            fi
+
+            if [[ -z "${DOCKER_LOGIN}" ]]; then
+              echo "DOCKER_LOGIN is not set, will not be able to push image."
+              exit 1
+            fi
+
+            if [[ -z "${DOCKER_PASSWORD}" ]]; then
+              echo "DOCKER_PASSWORD is not set, will not be able to push image."
+              exit 1
+            fi
+
+      - run:
+          name: Check remote docker registry login
+          description: TODO
+          command: |
+            docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD $(yq -r .docker.registry /tmp/workspace/config.yaml)
+            if [ $? -ne 0 ]; then
+                echo "Project configuration file not present or empty."
+                exit 1
+            fi
+
+      - run:
+          name: Check other env variables
+          description: TODO
+          command: |
+            if [[ -z "${NOTIFICATIONS_DOCKER_WEBHOOK}" ]]; then
+              echo "NOTIFICATIONS_DOCKER_WEBHOOK is not set, will not be able to procede."
+              exit 1
+            fi
+
+  lint:
+    executor: node-executor
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - dependencies-npm-cache-v1-{{ checksum "package-lock.json" }}
+            - dependencies-npm-cache-v1-
+
+      - run:
+            name: Install NPM
+            command: |
+                npm install
+
+      - save_cache:
+          key: dependencies-npm-cache-v1-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+
+      - run:
+          name: Lint project code
+          description: |
+            Run unified linting command.
+            This is a preferred way of running npm based lint commands as any addition or change
+            in the package.json does not require any change here.
+          command: npm run lint
+
+  ## Docker builds ##
+
+  compile-docker-image:
+    executor: docker-executor
+
+    steps:
+      - executor-alpine-setup-dependencies
+
+      - checkout
+
+      - *attach_workspace
+
+      - setup_remote_docker
+
+      - run:
+          name: Build docker
+          description: TODO
+          command: |
+            docker build -t os-alpine:$CIRCLE_SHA1 .
+
+      - run:
+          name: Docker registry login
+          command: |
+            docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD docker.io
+
+      - run:
+          name: Tag docker image
+          command: |
+            docker tag os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:latest
+
+      - run:
+          name: Publish docker image
+          command: |
+            docker push $DOCKER_LOGIN/os-alpine:latest
+
+
+
+
+workflows:
+  version: 2.1
+
+  pre-build:
+    jobs:
+      - base
+      - lint
+      - compile-docker-image:
+          requires:
+            - base
+            - lint
+
+      - slack/approval-notification:
+          color: '#42e2f4'
+          message: Workflow end
+          webhook: $NOTIFICATIONS_DOCKER_WEBHOOK
+          requires:
+            - compile-docker-image
+
+

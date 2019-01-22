@@ -1,0 +1,28 @@
+{
+  "name": "docker-redismodules",
+  "version": "0.0.1",
+  "description": "docker-redismodules",
+  "author": "Matija Boban <code@matijaboban.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/matijaboban/docker-redismoduls.git"
+  },
+  "scripts": {
+    "lint-eslint": "node_modules/.bin/eslint --ext js,json,md .",
+    "lint-yaml": "node_modules/.bin/yamllint **/*.yml **/*.yaml",
+    "lint-docker": "node_modules/.bin/dockerfilelint Dockerfile",
+    "lint": "npm run lint-eslint && npm run lint-yaml && npm run lint-docker"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "dockerfilelint": "^1.4.0",
+    "eslint": "^5.12.0",
+    "eslint-plugin-docker": "^0.1.0",
+    "eslint-plugin-filenames": "^1.3.2",
+    "eslint-plugin-json": "^1.3.2",
+    "eslint-plugin-markdown": "^1.0.0",
+    "yaml-lint": "^1.2.4"
+  }
+}
