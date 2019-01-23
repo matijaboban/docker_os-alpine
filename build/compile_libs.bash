@@ -5,11 +5,11 @@ config=/tmp/workspace/config.yaml
 scr=~/project/build/compiled/packages-install.sh
 
 
-while getopts tag: option
+while getopts t: option
 do
  case "${option}"
  in
- tag) tag=${OPTARG};;
+ t) tag=${OPTARG};;
  esac
 done
 
