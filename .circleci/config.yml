@@ -574,13 +574,14 @@ jobs:
 
       - setup_remote_docker
 
-      - alpine-lib-build:
-          docker-tag: core
+      # - alpine-lib-build:
+      #     docker-tag: core
 
       - run:
           name: Compile base docker
           description: TODO
           command: |
+            bash build/compile_libs.bash core
             docker build --force-rm -t local/os-alpine:$CIRCLE_SHA1 . | tee os-alpine.log
 
       - run:
@@ -589,13 +590,14 @@ jobs:
             docker tag local/os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:latest
             docker tag local/os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8
 
-      - alpine-lib-build:
-          docker-tag: build
+      # - alpine-lib-build:
+      #     docker-tag: build
 
       - run:
           name: Compile build docker
           description: TODO
           command: |
+            bash build/compile_libs.bash build
             docker build -t local/os-alpine-build:$CIRCLE_SHA1 . | tee os-alpine-build.log
 
       - run:
@@ -603,13 +605,14 @@ jobs:
           command: |
             docker tag local/os-alpine-build:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8-build
 
-      - alpine-lib-build:
-          docker-tag: docker
+      # - alpine-lib-build:
+      #     docker-tag: docker
 
       - run:
           name: Compile docker-base image
           description: TODO
           command: |
+            bash build/compile_libs.bash docker
             docker build -t local/os-alpine-docker-build-base:$CIRCLE_SHA1 . | tee os-alpine-docker-build-base.log
 
       - run:
