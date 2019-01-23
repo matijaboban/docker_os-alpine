@@ -416,7 +416,7 @@ commands:
       - run:
           name: << parameters.docker-tag >>
           command: |
-
+            ##
             echo "" > << parameters.env-install_script_path >>
 
             if [ $(yq -c ".tags.<< parameters.docker-tag >>.apk" << parameters.env-config_path >>) != null ]
@@ -430,7 +430,16 @@ commands:
               done
             fi
 
+            if [ $(yq -c ".tags.<< parameters.docker-tag >>.pip" << parameters.env-config_path >>) != null ]
+            then
+              #
+              pip_libs=$(yq -c ".tags.<< parameters.docker-tag >>.pip | .[]" << parameters.env-config_path >>)
 
+              for pip in $pip_libs
+              do
+                  echo "pip add --no-cache $pip" >> << parameters.env-install_script_path >>
+              done
+            fi
 
             ##
             #echo $(yq -c ".tags.<< parameters.docker-tag >>.apk" << parameters.env-config_path >>)
