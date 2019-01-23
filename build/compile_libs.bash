@@ -52,6 +52,3 @@ then
       echo "pip install $pip" >> $scr
   done
 fi
-
-
-cat $scr

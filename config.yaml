@@ -24,7 +24,7 @@ tags:
       - bash
       - tcl
       - jq
-      - moreutils --repository http://dl-3.alpinelinux.org/alpine/edge/community/
+      - moreutils --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/
       - py-pip
     pip:
       - yq
