@@ -1,27 +1,37 @@
 #!/bin/bash
 
-## config path
+## default values
 config=/tmp/workspace/config.yaml
 scr=~/project/build/compiled/packages-install.sh
 
 
-while getopts t: option
+while getopts c:s:t: option
 do
- case "${option}"
- in
- t) tag=${OPTARG};;
- esac
+    case "${option}"
+    in
+        c) config=${OPTARG};;
+        s) scr=${OPTARG};;
+        t) tag=${OPTARG};;
+    esac
 done
 
-echo $tag
+##
+if [ -z "$tag" ]
+then
+      echo "Docker tag was not specified via -t."
+      exit 1
+fi
 
+# echo $tag
+
+## empty config
 echo "" > $scr
 
 
-IFS=$'\n'       # make newlines the only separator
+# IFS=$'\n'       # make newlines the only separator
 
 
-if [ $(yq -r ".tags.$tag.apk" $config) != null ]
+if [ "$(yq -r ".tags.$tag.apk" $config)" != null ]
 then
   #
   apk_libs=$(yq -r ".tags.$tag.apk | .[]" $config)
@@ -32,7 +42,7 @@ then
   done
 fi
 
-if [ $(yq -r ".tags.$tag.pip" $config) != null ]
+if [ "$(yq -r ".tags.$tag.pip" $config)" != null ]
 then
   #
   pip_libs=$(yq -r ".tags.$tag.pip | .[]" $config)
@@ -42,3 +52,6 @@ then
       echo "pip install $pip" >> $scr
   done
 fi
+
+
+cat $scr
