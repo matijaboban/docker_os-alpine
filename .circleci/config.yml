@@ -581,7 +581,7 @@ jobs:
           name: Compile base docker
           description: TODO
           command: |
-            bash build/compile_libs.bash core
+            bash build/compile_libs.bash -tag core
             docker build --force-rm -t local/os-alpine:$CIRCLE_SHA1 . | tee os-alpine.log
 
       - run:
@@ -597,7 +597,7 @@ jobs:
           name: Compile build docker
           description: TODO
           command: |
-            bash build/compile_libs.bash build
+            bash build/compile_libs.bash -tag build
             docker build -t local/os-alpine-build:$CIRCLE_SHA1 . | tee os-alpine-build.log
 
       - run:
@@ -612,7 +612,7 @@ jobs:
           name: Compile docker-base image
           description: TODO
           command: |
-            bash build/compile_libs.bash docker
+            bash build/compile_libs.bash -tag docker
             docker build -t local/os-alpine-docker-build-base:$CIRCLE_SHA1 . | tee os-alpine-docker-build-base.log
 
       - run:
