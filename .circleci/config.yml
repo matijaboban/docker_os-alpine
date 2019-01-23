@@ -417,7 +417,7 @@ commands:
           name: << parameters.docker-tag >>
           command: |
             ##
-            echo yq -c ".tags.<< parameters.docker-tag >>.apk" << parameters.env-config_path >>
+            echo $(yq -c ".tags.<< parameters.docker-tag >>.apk" << parameters.env-config_path >>)
 
 jobs:
 
