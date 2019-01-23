@@ -419,10 +419,12 @@ commands:
             ##
             echo "" > << parameters.env-install_script_path >>
 
-            if [ $(yq -c ".tags.<< parameters.docker-tag >>.apk" << parameters.env-config_path >>) != null ]
+            IFS=$'\n'       # make newlines the only separator
+
+            if [ $(yq -r ".tags.<< parameters.docker-tag >>.apk" << parameters.env-config_path >>) != null ]
             then
               #
-              apk_libs=$(yq -c ".tags.<< parameters.docker-tag >>.apk | .[]" << parameters.env-config_path >>)
+              apk_libs=$(yq -r ".tags.<< parameters.docker-tag >>.apk | .[]" << parameters.env-config_path >>)
 
               for apk in $apk_libs
               do
@@ -430,14 +432,14 @@ commands:
               done
             fi
 
-            if [ $(yq -c ".tags.<< parameters.docker-tag >>.pip" << parameters.env-config_path >>) != null ]
+            if [ $(yq -r ".tags.<< parameters.docker-tag >>.pip" << parameters.env-config_path >>) != null ]
             then
               #
-              pip_libs=$(yq -c ".tags.<< parameters.docker-tag >>.pip | .[]" << parameters.env-config_path >>)
+              pip_libs=$(yq -r ".tags.<< parameters.docker-tag >>.pip | .[]" << parameters.env-config_path >>)
 
               for pip in $pip_libs
               do
-                  echo "pip add --no-cache $pip" >> << parameters.env-install_script_path >>
+                  echo "pip install $pip" >> << parameters.env-install_script_path >>
               done
             fi
 
