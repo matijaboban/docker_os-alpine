@@ -577,7 +577,7 @@ jobs:
           docker-tag: docker
 
       - alpine-lib-build:
-          docker-tag: docker
+          docker-tag: build
 
       - run:
           name: Tag base docker image
