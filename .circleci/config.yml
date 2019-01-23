@@ -401,6 +401,24 @@ commands:
       #     command: |
       #       exit 2
 
+  alpine-lib-build:
+    description: "TODO"
+    parameters:
+      env-config_path:
+        type: string
+        default: "/tmp/workspace/config.yaml"
+      env-install_script_path:
+        type: string
+        default: "build/compiled/packages-install.sh"
+      docker-tag:
+          type: string
+    steps:
+      - run:
+          name: << parameters.docker-tag >>
+          command: |
+            ##
+            echo yq -c ".tags.<< parameters.docker-tag >>.apk" << parameters.env-config_path >>
+
 jobs:
 
   ## Preparation jobs ##
@@ -551,6 +569,15 @@ jobs:
             echo "apk add --no-cache coreutils==8.29-r2" >> ~/project/build/compiled/packages-install.sh
             echo "apk add --no-cache zip==3.0-r6" >> ~/project/build/compiled/packages-install.sh
             docker build -t local/os-alpine-build:$CIRCLE_SHA1 . | tee os-alpine-build.log
+
+      - alpine-lib-build:
+          docker-tag: core
+
+      - alpine-lib-build:
+          docker-tag: docker
+
+      - alpine-lib-build:
+          docker-tag: docker
 
       - run:
           name: Tag base docker image
