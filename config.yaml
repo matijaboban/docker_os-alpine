@@ -5,12 +5,14 @@ docker:
 
 tags:
   core:
-    packages:
+    apk:
+    pip:
   docker:
-    packages:
+    apk:
       - docker
+    pip:
   build:
-    packages:
+    apk:
       - build-base
       - coreutils
       - zip
@@ -21,3 +23,7 @@ tags:
       - ca-certificates
       - bash
       - tcl
+      - jq
+      - py-pip
+    pip:
+      - yq
