@@ -533,7 +533,7 @@ jobs:
           name: Compile base docker
           description: TODO
           command: |
-            docker build -t local/os-alpine:$CIRCLE_SHA1 .
+            docker build --force-rm -t local/os-alpine:$CIRCLE_SHA1 . | tee os-alpine.log
 
       - run:
           name: Tag base docker image
@@ -546,11 +546,11 @@ jobs:
           name: Compile build docker
           description: TODO
           command: |
-            echo "apk add git==2.18.1-r0" >> ~/project/build/compiled/packages-install.sh
-            echo "apk add build-base==0.5-r1" >> ~/project/build/compiled/packages-install.sh
-            echo "apk add coreutils==8.29-r2" >> ~/project/build/compiled/packages-install.sh
-            echo "apk add zip==3.0-r6" >> ~/project/build/compiled/packages-install.sh
-            docker build -t local/os-alpine-build:$CIRCLE_SHA1 .
+            echo "apk add --no-cache git==2.18.1-r0" >> ~/project/build/compiled/packages-install.sh
+            echo "apk add --no-cache build-base==0.5-r1" >> ~/project/build/compiled/packages-install.sh
+            echo "apk add --no-cache coreutils==8.29-r2" >> ~/project/build/compiled/packages-install.sh
+            echo "apk add --no-cache zip==3.0-r6" >> ~/project/build/compiled/packages-install.sh
+            docker build -t local/os-alpine-build:$CIRCLE_SHA1 . | tee os-alpine-build.log
 
       - run:
           name: Tag base docker image
@@ -562,8 +562,8 @@ jobs:
           name: Compile docker-base image
           description: TODO
           command: |
-            echo "apk add docker==18.06.1-r0" >> ~/project/build/compiled/packages-install.sh
-            docker build -t local/os-alpine-docker-build-base:$CIRCLE_SHA1 .
+            echo "apk add --no-cache docker==18.06.1-r0" >> ~/project/build/compiled/packages-install.sh
+            docker build -t local/os-alpine-docker-build-base:$CIRCLE_SHA1 . | tee os-alpine-docker-build-base.log
 
       - run:
           name: Tag docker-base image
