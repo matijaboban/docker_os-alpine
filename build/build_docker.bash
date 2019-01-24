@@ -63,15 +63,19 @@ config=/tmp/workspace/config.yaml
 scr=~/project/build/compiled/packages-install.sh
 working_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 log_dir=~/project/build/logs
+save_image=false
+save_image_dir=/tmp/workspace/docker
 
 
-while getopts c:s:t: option
+while getopts c:s:t:i:p: option
 do
     case "${option}"
     in
         c) config=${OPTARG};;
         s) scr=${OPTARG};;
         t) tag=${OPTARG};;
+        i) save_image=${OPTARG};;
+        p) save_image_dir=${OPTARG};;
     esac
 done
 
@@ -80,6 +84,11 @@ done
 
 docker_tags=$(yq -r '.tags | map_values(keys) | to_entries[] | .key' $config)
 
+## create workspace dir if saving docker images
+if [ $save_image == true ]
+then
+    mkdir -p $save_image_dir
+fi
 
 for tag in $docker_tags
 do
@@ -92,6 +101,13 @@ do
 
     # build docker image and log
     docker build --force-rm -t $docker_image_name . | tee $log_dir/${docker_image_name/\//}.log
+
+    ## save docekr images
+    if [ $save_image == true ]
+    then
+        printf "Saving $docker_image_name image\n"
+        echo docker save -o $save_image_dir/${docker_image_name/\//}.tar $docker_image_name
+    fi
 
 done
 

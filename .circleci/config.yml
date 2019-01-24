@@ -581,13 +581,19 @@ jobs:
           name: Compile docker images
           description: TODO
           command: |
-            bash build/build_docker.bash
+            bash build/build_docker.bash -i true
+
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - docker
+
 
       - run:
-          name: List docker images
+          name: List docker images tar-s
           description: TODO
           command: |
-            docker images
+            ls -alh /tmp/workspace/docker
 
       # - run:
       #     name: Compile base docker
