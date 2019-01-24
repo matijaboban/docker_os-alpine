@@ -55,6 +55,9 @@ do
     then
         printf ":: --> Saving $docker_image_name image\n"
         docker save -o $save_image_dir/${docker_image_name//[\/]/_}.tar $docker_image_name
+
+        ## compress image
+        gzip -9k $save_image_dir/${docker_image_name//[\/]/_}.tar
     fi
 
 done
