@@ -13,7 +13,7 @@ scr=~/project/build/compiled/packages-install.sh
 log_dir=~/project/.logs
 save_image=false
 save_image_dir=/tmp/workspace/docker
-
+compress_image=true
 
 while getopts c:s:t:i:p: option
 do
@@ -57,7 +57,10 @@ do
         docker save -o $save_image_dir/${docker_image_name//[\/]/_}.tar $docker_image_name
 
         ## compress image
-        gzip -9k $save_image_dir/${docker_image_name//[\/]/_}.tar
+        if [ $compress_image == true ]
+        then
+            gzip -9 $save_image_dir/${docker_image_name//[\/]/_}.tar
+        fi
     fi
 
 done
