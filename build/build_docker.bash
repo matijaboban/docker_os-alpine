@@ -62,6 +62,7 @@ image_name ()
 config=/tmp/workspace/config.yaml
 scr=~/project/build/compiled/packages-install.sh
 working_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
+log_dir=~/project/build/logs
 
 
 while getopts c:s:t: option
@@ -90,7 +91,7 @@ do
     bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
 
     # build docker image and log
-    docker build --force-rm -t $docker_image_name . | tee ${docker_image_name/\//}.log
+    docker build --force-rm -t $docker_image_name . | tee $log_dir/${docker_image_name/\//}.log
 
 done
 

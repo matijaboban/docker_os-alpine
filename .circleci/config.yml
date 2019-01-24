@@ -646,7 +646,8 @@ jobs:
       #       docker push $DOCKER_LOGIN/os-alpine:3.8-build
       #       docker push $DOCKER_LOGIN/os-alpine:3.8-docker-build-base
 
-
+      - store_artifacts:
+          path: build/logs
 
 
 
