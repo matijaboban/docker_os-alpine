@@ -10,7 +10,7 @@ source $working_directory/helpers.bash
 ## default values
 config=/tmp/workspace/config.yaml
 scr=~/project/build/compiled/packages-install.sh
-log_dir=~/project/build/logs
+log_dir=~/project/.logs
 save_image=false
 save_image_dir=/tmp/workspace/docker
 
@@ -53,7 +53,7 @@ do
     ## save docekr images
     if [ $save_image == true ]
     then
-        printf "Saving $docker_image_name image\n"
+        printf ":: --> Saving $docker_image_name image\n"
         docker save -o $save_image_dir/${docker_image_name//[\/]/_}.tar $docker_image_name
     fi
 

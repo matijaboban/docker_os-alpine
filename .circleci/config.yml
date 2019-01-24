@@ -562,7 +562,7 @@ jobs:
 
   ## Docker builds ##
 
-  compile-docker-image:
+  compile-docker-images:
     executor: docker-executor
 
     steps:
@@ -589,24 +589,7 @@ jobs:
             - docker
 
 
-      - run:
-          name: List docker images tar-s
-          description: TODO
-          command: |
-            ls -alh /tmp/workspace/docker
 
-
-      - run:
-          name: Load saved images from tar
-          description: TODO
-          command: |
-            echo ""
-
-      - run:
-          name: Tag and publish images
-          description: TODO
-          command: |
-            echo ""
 
       # - run:
       #     name: Compile base docker
@@ -672,9 +655,40 @@ jobs:
       #       docker push $DOCKER_LOGIN/os-alpine:3.8-docker-build-base
 
       - store_artifacts:
-          path: build/logs
+          path: .logs
 
+  test-docker-images:
+    executor: docker-executor
 
+    steps:
+      - executor-alpine-setup-dependencies
+
+      - checkout
+
+      - *attach_workspace
+
+      - setup_remote_docker
+
+      - run:
+          name: List docker images tar-s
+          description: TODO
+          command: |
+            ls -alh /tmp/workspace/docker
+
+      - run:
+          name: Load saved images from tar
+          description: TODO
+          command: |
+            echo ""
+
+      - run:
+          name: Tag and publish images
+          description: TODO
+          command: |
+            echo ""
+
+      - store_artifacts:
+          path: .logs
 
 
 workflows:
@@ -683,11 +697,17 @@ workflows:
   pre-build:
     jobs:
       - base
+
       - lint
-      - compile-docker-image:
+
+      - compile-docker-images:
           requires:
             - base
             - lint
+
+      - test-docker-images:
+          requires:
+            - compile-docker-images
 
       - slack/approval-notification:
           color: '#42e2f4'
