@@ -44,6 +44,9 @@ fi
 
 if [ "$(yq -r ".tags.$tag.pip" $config)" != null ]
 then
+    ## run pip upgrade to avoid out-of-date message in build
+    echo "pip install --upgrade pip" >> $scr
+
   #
   pip_libs=$(yq -r ".tags.$tag.pip | .[]" $config)
 
