@@ -566,7 +566,7 @@ jobs:
     executor: docker-executor
 
     steps:
-      - executor-alpine-setup-dependencies
+      # - executor-alpine-setup-dependencies
 
       - checkout
 
@@ -582,6 +582,12 @@ jobs:
           description: TODO
           command: |
             bash build/build_docker.bash
+
+      - run:
+          name: List docker images
+          description: TODO
+          command: |
+            docker images
 
       # - run:
       #     name: Compile base docker
