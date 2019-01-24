@@ -581,7 +581,7 @@ jobs:
           name: Compile docker images
           description: TODO
           command: |
-            bash build/build_docker.bash -i true
+            bash build/docker_build.bash -i true
 
       - persist_to_workspace:
           root: *workspace_root
@@ -594,6 +594,19 @@ jobs:
           description: TODO
           command: |
             ls -alh /tmp/workspace/docker
+
+
+      - run:
+          name: Load saved images from tar
+          description: TODO
+          command: |
+            echo ""
+
+      - run:
+          name: Tag and publish images
+          description: TODO
+          command: |
+            echo ""
 
       # - run:
       #     name: Compile base docker
