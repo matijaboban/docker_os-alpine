@@ -59,6 +59,7 @@ do
         ## compress image
         if [ $compress_image == true ]
         then
+            printf ":: --> Compressing $docker_image_name image\n"
             gzip -9 $save_image_dir/${docker_image_name//[\/]/_}.tar
         fi
     fi
