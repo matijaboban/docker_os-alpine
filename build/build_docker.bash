@@ -85,7 +85,7 @@ for tag in $docker_tags
 do
     docker_image_name=$(image_name -t $tag -g 3.8 -p "local/")
 
-    echo "Start build for $docker_image_name"
+    printf "\n:: Start build for $docker_image_name\n"
 
     # compile lib build commands
     bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
