@@ -37,3 +37,11 @@ tags:
   rust:
     apk:
       - rust
+  bash:
+    apk:
+      - bash
+  python-redis:
+    apk:
+      - py2-pip
+    pip:
+      - redis
