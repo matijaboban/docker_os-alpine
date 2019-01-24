@@ -7,6 +7,8 @@ core:
   versions:
     - 3.8
 
+## notes: tag names should use underscores instead of hyphens due to jq parsing
+## this is subsequenrtly corrected within scripts TODO desc
 tags:
   core:
     apk:
@@ -40,7 +42,7 @@ tags:
   bash:
     apk:
       - bash
-  python-redis:
+  python_redis:
     apk:
       - py2-pip
     pip:

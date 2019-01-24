@@ -7,10 +7,11 @@ image_name ()
     image_name_prefix=''
     image_name_base=$(yq -r '.docker.repoName' $config)
     tag_base=''
+    correct_underscore=true
 
     # process options localy defined TODO desc
-    local OPTIND b t
-    while getopts b:t:g:p: option
+    local OPTIND b t g p u
+    while getopts b:t:g:p:u: option
     do
         case "${option}"
         in
@@ -18,6 +19,7 @@ image_name ()
             p) image_name_prefix=${OPTARG};;
             t) tag=${OPTARG};;
             g) tag_base=${OPTARG};;
+            u) correct_underscore=${OPTARG};;
         esac
     done
 
@@ -53,6 +55,15 @@ image_name ()
     then
         image_name=$image_name_prefix$image_name
     fi
+
+    ## TODO desc convert underscore to hyphen due to jq issue with parsing
+    if [ $compress_image == true ]
+    then
+        image_name=${image_name//_/-}
+    fi
+
+
+
 
     ## TODO desc
     echo  "${image_name%-}"

@@ -30,7 +30,6 @@ echo "" > $scr
 #
 IFS=$'\n'       # make newlines the only separator
 
-
 if [ "$(yq -r ".tags.$tag.apk" $config)" != null ]
 then
   #
