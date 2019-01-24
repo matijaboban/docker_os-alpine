@@ -578,7 +578,7 @@ jobs:
       #     docker-tag: core
 
       - run:
-          name: Compile base docker
+          name: Compile docker images
           description: TODO
           command: |
             bash build/build_docker.bash

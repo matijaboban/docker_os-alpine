@@ -88,7 +88,7 @@ do
     bash $working_directory/compile_libs.bash -t $tag -s $working_directory/compiled/packages-install.sh
 
     # build docker image and log
-    echo docker build --force-rm -t $docker_image_name . | tee ${docker_image_name/\//}.log
+    docker build --force-rm -t $docker_image_name . | tee ${docker_image_name/\//}.log
 
 done
 
