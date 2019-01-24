@@ -566,7 +566,7 @@ jobs:
     executor: docker-executor
 
     steps:
-      # - executor-alpine-setup-dependencies
+      - executor-alpine-setup-dependencies
 
       - checkout
 
