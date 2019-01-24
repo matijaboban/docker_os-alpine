@@ -2,6 +2,10 @@ docker:
   registry: docker.io
   repoName: os-alpine
 
+core:
+  name: alpine
+  versions:
+    - 3.8
 
 tags:
   core:
@@ -23,6 +27,7 @@ tags:
       - ca-certificates
       - bash
       - tcl
+      - git
       - jq
       - moreutils --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/
       - py-pip
