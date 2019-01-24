@@ -100,13 +100,13 @@ do
     bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
 
     # build docker image and log
-    docker build --force-rm -t $docker_image_name . | tee $log_dir/${docker_image_name/\//}.log
+    docker build --force-rm -t $docker_image_name . | tee $log_dir/${docker_image_name//[\/]/_}.log
 
     ## save docekr images
     if [ $save_image == true ]
     then
         printf "Saving $docker_image_name image\n"
-        echo docker save -o $save_image_dir/${docker_image_name/\//}.tar $docker_image_name
+        docker save -o $save_image_dir/${docker_image_name//[\/]/_}.tar $docker_image_name
     fi
 
 done
