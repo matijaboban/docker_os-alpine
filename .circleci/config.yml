@@ -581,49 +581,55 @@ jobs:
           name: Compile base docker
           description: TODO
           command: |
-            bash build/compile_libs.bash -t core
-            docker build --force-rm -t local/os-alpine:$CIRCLE_SHA1 . | tee os-alpine.log
+            bash build/build_docker.bash
 
-      - run:
-          name: Tag base docker image
-          command: |
-            docker tag local/os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:latest
-            docker tag local/os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8
+      # - run:
+      #     name: Compile base docker
+      #     description: TODO
+      #     command: |
+      #       bash build/compile_libs.bash -t core
+      #       docker build --force-rm -t local/os-alpine:$CIRCLE_SHA1 . | tee os-alpine.log
+
+      # - run:
+      #     name: Tag base docker image
+      #     command: |
+      #       docker tag local/os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:latest
+      #       docker tag local/os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8
 
       # - alpine-lib-build:
       #     docker-tag: build
 
-      - run:
-          name: Compile build docker
-          description: TODO
-          command: |
-            bash build/compile_libs.bash -t build
-            docker build -t local/os-alpine-build:$CIRCLE_SHA1 . | tee os-alpine-build.log
+      # - run:
+      #     name: Compile build docker
+      #     description: TODO
+      #     command: |
+      #       bash build/compile_libs.bash -t build
+      #       docker build -t local/os-alpine-build:$CIRCLE_SHA1 . | tee os-alpine-build.log
 
-      - run:
-          name: Tag base docker image
-          command: |
-            docker tag local/os-alpine-build:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8-build
+      # - run:
+      #     name: Tag base docker image
+      #     command: |
+      #       docker tag local/os-alpine-build:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8-build
 
       # - alpine-lib-build:
       #     docker-tag: docker
 
-      - run:
-          name: Compile docker-base image
-          description: TODO
-          command: |
-            bash build/compile_libs.bash -t docker
-            docker build -t local/os-alpine-docker-build-base:$CIRCLE_SHA1 . | tee os-alpine-docker-build-base.log
+      # - run:
+      #     name: Compile docker-base image
+      #     description: TODO
+      #     command: |
+      #       bash build/compile_libs.bash -t docker
+      #       docker build -t local/os-alpine-docker-build-base:$CIRCLE_SHA1 . | tee os-alpine-docker-build-base.log
 
-      - run:
-          name: Tag docker-base image
-          command: |
-            docker tag local/os-alpine-docker-build-base:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8-docker-build-base
+      # - run:
+      #     name: Tag docker-base image
+      #     command: |
+      #       docker tag local/os-alpine-docker-build-base:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8-docker-build-base
 
-      - run:
-          name: Docker registry login
-          command: |
-            docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD docker.io
+      # - run:
+      #     name: Docker registry login
+      #     command: |
+      #       docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD docker.io
 
 
       # - run:
@@ -632,13 +638,13 @@ jobs:
       #       docker tag os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:latest
       #       docker tag os-alpine:$CIRCLE_SHA1 $DOCKER_LOGIN/os-alpine:3.8
 
-      - run:
-          name: Publish docker image
-          command: |
-            docker push $DOCKER_LOGIN/os-alpine:latest
-            docker push $DOCKER_LOGIN/os-alpine:3.8
-            docker push $DOCKER_LOGIN/os-alpine:3.8-build
-            docker push $DOCKER_LOGIN/os-alpine:3.8-docker-build-base
+      # - run:
+      #     name: Publish docker image
+      #     command: |
+      #       docker push $DOCKER_LOGIN/os-alpine:latest
+      #       docker push $DOCKER_LOGIN/os-alpine:3.8
+      #       docker push $DOCKER_LOGIN/os-alpine:3.8-build
+      #       docker push $DOCKER_LOGIN/os-alpine:3.8-docker-build-base
 
 
 
