@@ -34,3 +34,6 @@ tags:
       - zip
     pip:
       - yq
+  rust:
+    apk:
+      - rust
