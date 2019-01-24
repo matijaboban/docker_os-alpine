@@ -714,6 +714,6 @@ workflows:
           message: Workflow end
           webhook: $NOTIFICATIONS_DOCKER_WEBHOOK
           requires:
-            - compile-docker-image
+            - compile-docker-images
 
 
