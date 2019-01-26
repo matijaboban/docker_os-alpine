@@ -679,7 +679,7 @@ jobs:
           name: Load saved images from tar
           description: TODO
           command: |
-            echo ""
+            bash build/docker_publish.bash -g 3.8
 
       - run:
           name: Tag and publish images

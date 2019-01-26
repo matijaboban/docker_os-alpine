@@ -102,7 +102,7 @@ loadDockerImageFromTar ()
     docker load -i $image_base_path/${image_name//[\/]/_}.tar
 }
 
-tagDockerImage ()
-{}
-publishDockerImage ()
-{}
+# tagDockerImage ()
+# {}
+# publishDockerImage ()
+# {}

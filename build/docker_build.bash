@@ -67,8 +67,4 @@ do
         fi
     fi
 
-    ## TEMP
-    loadDockerImageFromTar -i $docker_image_name -p $save_image_dir
-
 done
-docker images
