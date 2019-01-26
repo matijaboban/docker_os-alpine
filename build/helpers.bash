@@ -99,6 +99,8 @@ loadDockerImageFromTar ()
         gzip -dk $image_base_path/${image_name//[\/]/_}.tar.gz
     fi
 
+    ##
+    printf ":: --> Loading $image_name image\n"
     docker load -i $image_base_path/${image_name//[\/]/_}.tar
 }
 
