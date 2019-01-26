@@ -66,7 +66,7 @@ generateImageNameAndTag ()
     ## TODO desc
     echo  "${image_name%-}"
 
-    exit 0
+    # exit 0
 }
 
 loadDockerImageFromTar ()
@@ -105,7 +105,7 @@ loadDockerImageFromTar ()
     printf ":: --> Loading $image_name image\n"
     docker load -i $image_base_path/${image_name//[\/]/_}.tar
 
-    exit 0
+    # exit 0
 }
 
 ## tag docker image for remote repo
@@ -148,15 +148,15 @@ tagDockerImage ()
 
     # Emmit exit status. As the function is constructed for re-usablity
     # it needs to exited ptoperly
-    exit 0
+    # exit 0
 }
 
 
-publishDockerImage ()
-{
-    echo publishDockerImage
-    exit 0
-}
+# publishDockerImage ()
+# {
+#     echo publishDockerImage
+#     exit 0
+# }
 
-##
-"$@"
+# ##
+# "$@"
