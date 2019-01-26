@@ -66,3 +66,10 @@ generateImageNameAndTag ()
     ## TODO desc
     echo  "${image_name%-}"
 }
+
+loadDockerImageFromTar ()
+{}
+tagDockerImage ()
+{}
+publishDockerImage ()
+{}

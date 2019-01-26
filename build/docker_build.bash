@@ -48,7 +48,7 @@ do
     printf "\n:: Start build for $docker_image_name\n"
 
     # compile lib build commands
-    echo bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
+    bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
 
     # build docker image and log
     docker build --force-rm -t $docker_image_name . | tee $log_dir/${docker_image_name//[\/]/_}.log

@@ -10,9 +10,9 @@ core:
 ## notes: tag names should use underscores instead of hyphens due to jq parsing
 ## this is subsequenrtly corrected within scripts TODO desc
 tags:
-  # core:
-  #   apk:
-  #   pip:
+  core:
+    apk:
+    pip:
   docker:
     apk:
       - docker
