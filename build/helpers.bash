@@ -65,6 +65,8 @@ generateImageNameAndTag ()
 
     ## TODO desc
     echo  "${image_name%-}"
+
+    exit 0
 }
 
 loadDockerImageFromTar ()
@@ -102,9 +104,59 @@ loadDockerImageFromTar ()
     ##
     printf ":: --> Loading $image_name image\n"
     docker load -i $image_base_path/${image_name//[\/]/_}.tar
+
+    exit 0
 }
 
-# tagDockerImage ()
-# {}
-# publishDockerImage ()
-# {}
+## tag docker image for remote repo
+tagDockerImage ()
+{
+    # define defaults
+    destination_base=matijaboban
+
+    # process options localy defined TODO desc
+    local OPTIND s d
+    while getopts s:d: option
+    do
+        case "${option}"
+        in
+            s) source_name=${OPTARG};;
+            d) destination_name=${OPTARG};;
+            b) destination_base=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$source_name" ]]
+    then
+        echo "Required parameters not set."
+        exit 1
+    fi
+
+    # in case when the full remote name isnt specified
+    # we contruct the remote name/tag from local by
+    # replacing the "local" prefix with remote base
+    # brefix/path TODO
+    if [ -z "$destination_name" ]
+    then
+        destination_name=$destination_base/${source_name#*\/}
+    fi
+
+    ## return tag command
+    docker tag $source_name $destination_name
+
+    # Emmit exit status. As the function is constructed for re-usablity
+    # it needs to exited ptoperly
+    exit 0
+}
+
+
+publishDockerImage ()
+{
+    echo publishDockerImage
+    exit 0
+}
+
+##
+"$@"

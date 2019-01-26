@@ -33,5 +33,9 @@ do
     ## TEMP
     loadDockerImageFromTar -i $docker_image_name -p $docker_image_base_path
 
+    ## temp tag
+    tagDockerImage -s $docker_image_name
+
 done
 docker images
+docker ps
