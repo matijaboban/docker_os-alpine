@@ -68,7 +68,40 @@ generateImageNameAndTag ()
 }
 
 loadDockerImageFromTar ()
-{}
+{
+    # define defaults
+    is_image_commpresed=true
+
+
+    # process options localy defined TODO desc
+    local OPTIND i p
+    while getopts i:p: option
+    do
+        case "${option}"
+        in
+            i) image_name=${OPTARG};;
+            p) image_base_path=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$image_name" ||  -z "$image_base_path" ]]
+    then
+          echo "Required parameters not set."
+          exit 1
+    fi
+
+    ##
+    if [ $is_image_commpresed == true ]
+    then
+        printf ":: --> Decompressing $image_name image\n"
+        gzip -dk $image_base_path/${image_name//[\/]/_}.tar.gz
+    fi
+
+    docker load -i $image_base_path/${image_name//[\/]/_}.tar
+}
+
 tagDockerImage ()
 {}
 publishDockerImage ()
