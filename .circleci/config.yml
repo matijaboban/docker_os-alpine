@@ -581,7 +581,7 @@ jobs:
           name: Compile docker images
           description: TODO
           command: |
-            bash build/docker_build.bash -i true
+            bash build/docker_build.bash -g 3.8 -i true
 
       - persist_to_workspace:
           root: *workspace_root

@@ -1,12 +1,12 @@
 #!/bin/bash
 
 ## generate image name and tag
-image_name ()
+generateImageNameAndTag ()
 {
     # define defaults
     image_name_prefix=''
     image_name_base=$(yq -r '.docker.repoName' $config)
-    tag_base=''
+    tag_base=null
     correct_underscore=true
 
     # process options localy defined TODO desc
@@ -22,7 +22,7 @@ image_name ()
             u) correct_underscore=${OPTARG};;
         esac
     done
-
+# echo $tag_base; exit 0
     # blank the tag name when core is used
     # as when the core is used, its a bare tag
     if [ $tag == 'core' ]
@@ -32,7 +32,7 @@ image_name ()
 
 
     ## TODO desc
-    if [ -z $tag_base ]
+    if [[ -z $tag_base || $tag_base == null ]]
     then
         image_name=$image_name_base
     else
@@ -61,8 +61,6 @@ image_name ()
     then
         image_name=${image_name//_/-}
     fi
-
-
 
 
     ## TODO desc

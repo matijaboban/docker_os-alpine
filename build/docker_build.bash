@@ -14,8 +14,9 @@ log_dir=~/project/.logs
 save_image=false
 save_image_dir=/tmp/workspace/docker
 compress_image=true
+tag_base=null
 
-while getopts c:s:t:i:p: option
+while getopts c:s:t:i:p:l:g: option
 do
     case "${option}"
     in
@@ -24,6 +25,8 @@ do
         t) tag=${OPTARG};;
         i) save_image=${OPTARG};;
         p) save_image_dir=${OPTARG};;
+        l) log_dir=${OPTARG};;
+        g) tag_base=${OPTARG};;
     esac
 done
 
@@ -40,12 +43,12 @@ fi
 
 for tag in $docker_tags
 do
-    docker_image_name=$(image_name -t $tag -g 3.8 -p "local/")
+    docker_image_name=$(generateImageNameAndTag -t $tag -g $tag_base -p "local/")
 
     printf "\n:: Start build for $docker_image_name\n"
-
+exit 0
     # compile lib build commands
-    bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
+    echo bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
 
     # build docker image and log
     docker build --force-rm -t $docker_image_name . | tee $log_dir/${docker_image_name//[\/]/_}.log
