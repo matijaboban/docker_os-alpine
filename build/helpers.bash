@@ -57,7 +57,7 @@ generateImageNameAndTag ()
     fi
 
     ## TODO desc convert underscore to hyphen due to jq issue with parsing
-    if [ $compress_image == true ]
+    if [ $correct_underscore == true ]
     then
         image_name=${image_name//_/-}
     fi
