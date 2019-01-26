@@ -22,7 +22,7 @@ generateImageNameAndTag ()
             u) correct_underscore=${OPTARG};;
         esac
     done
-# echo $tag_base; exit 0
+
     # blank the tag name when core is used
     # as when the core is used, its a bare tag
     if [ $tag == 'core' ]

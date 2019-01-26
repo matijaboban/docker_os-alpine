@@ -46,7 +46,7 @@ do
     docker_image_name=$(generateImageNameAndTag -t $tag -g $tag_base -p "local/")
 
     printf "\n:: Start build for $docker_image_name\n"
-exit 0
+
     # compile lib build commands
     echo bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
 
