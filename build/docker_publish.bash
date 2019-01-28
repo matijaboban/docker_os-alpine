@@ -36,6 +36,7 @@ do
     ## temp tag
     tagDockerImage -s $docker_image_name
 
+    docker images
+    docker ps
+
 done
-docker images
-docker ps
