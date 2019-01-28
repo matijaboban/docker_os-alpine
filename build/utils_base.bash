@@ -12,7 +12,7 @@ returnBashVersion ()
 checkMinBashVersion ()
 {
     # Check we're not running bash 3.x
-    if [ $(returnBashVersion) -lt 4 ]; then
+    if [ $(returnBashVersion) -lt 7 ]; then
         echo "Bash 4.1 or later is required."
         exit 1
     fi
