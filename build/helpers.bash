@@ -113,6 +113,7 @@ tagDockerImage ()
 {
     # define defaults
     destination_base=matijaboban
+    destination_name=''
 
     # process options localy defined TODO desc
     local OPTIND s d
@@ -144,9 +145,9 @@ tagDockerImage ()
     fi
 
     ## return tag command
-    docker tag $source_name $destination_name
+    echo "docker tag $source_name $destination_name"
 
-    publishDockerImage -d $destination_name
+    # publishDockerImage -d $destination_name
     # Emmit exit status. As the function is constructed for re-usablity
     # it needs to exited ptoperly
     # exit 0

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # set working dir
-working_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
+wdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 
 ## import helpers
-source $working_directory/helpers.bash
+source $wdir/helpers.bash
 
 
 ## default values
@@ -25,18 +25,19 @@ done
 
 # Get docker tags from config
 docker_tags=$(yq -r '.tags | map_values(keys) | to_entries[] | .key' $config)
-
+# echo $docker_tags; exit 0;
 for tag in $docker_tags
 do
-    docker_image_name=$(generateImageNameAndTag -t $tag -g $tag_base -p "local/")
+    # docker_image_name=$(generateImageNameAndTag -t $tag -g $tag_base -p "local/")
+    docker_image_name="$(bash $wdir/utils_docker.bash generateImageNameAndTag -b $image_name_base -t $tag -g $tag_base -p local/)"
 
     ## TEMP
     loadDockerImageFromTar -i $docker_image_name -p $docker_image_base_path
 
     ## temp tag
-    tagDockerImage -s $docker_image_name
+    bash $wdir/utils_docker.bash tagDockerImage -s $docker_image_name
 
-    docker images
-    docker ps
+    # docker images
+    # docker ps
 
 done

@@ -80,6 +80,52 @@ generateImageNameAndTag ()
     exit 0
 }
 
+## tag docker image for remote repo
+tagDockerImage ()
+{
+    # define defaults
+    destination_base=matijaboban
+    destination_name=''
+
+    # process options localy defined TODO desc
+    local OPTIND s d
+    while getopts s:d: option
+    do
+        case "${option}"
+        in
+            s) source_name=${OPTARG};;
+            d) destination_name=${OPTARG};;
+            b) destination_base=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$source_name" ]]
+    then
+        echo "Required parameters not set."
+        exit 1
+    fi
+
+    # in case when the full remote name isnt specified
+    # we contruct the remote name/tag from local by
+    # replacing the "local" prefix with remote base
+    # brefix/path TODO
+    if [ -z "$destination_name" ]
+    then
+        destination_name=$destination_base/${source_name#*\/}
+    fi
+
+    ## return tag command
+    docker tag $source_name $destination_name
+
+    ## temp
+    docker push $destination_name
+
+    # Emmit exit status. As the function is constructed for re-usablity
+    # it needs to exited ptoperly
+    exit 0
+}
 
 #
 "$@"
