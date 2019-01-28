@@ -3,6 +3,9 @@
 # set working dir
 working_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 
+## checkMinBashVersion
+$working_directory/utils_base.bash checkMinBashVersion
+
 ## import helpers
 source $working_directory/helpers.bash
 
