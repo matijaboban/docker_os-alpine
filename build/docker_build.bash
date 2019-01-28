@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # set working dir
-working_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
+wdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 
 
 ## checkMinBashVersion || TODO refactor
-chMinBash="$(bash $working_directory/utils_base.bash checkMinBashVersion)"
+chMinBash="$(bash $wdir/utils_base.bash checkMinBashVersion)"
 if [[ -n $chMinBash ]]
 then
     echo $chMinBash
@@ -13,7 +13,7 @@ then
 fi
 
 ## import helpers
-source $working_directory/helpers.bash
+source $wdir/helpers.bash
 
 
 ## default values
@@ -52,12 +52,12 @@ fi
 
 for tag in $docker_tags
 do
-    docker_image_name="$(bash $working_directory/utils_docker.bash -t $tag -g $tag_base -p 'local/')"
+    docker_image_name="$(bash $wdir/utils_docker.bash generateImageNameAndTag -t $tag -g $tag_base -p local/)"
 
     printf "\n:: Start build for $docker_image_name\n"
 
     # compile lib build commands
-    bash $working_directory/compile_libs.bash -t $tag -c config.yaml -s $working_directory/compiled/packages-install.sh
+    bash $wdir/compile_libs.bash -t $tag -c config.yaml -s $wdir/compiled/packages-install.sh
 
     # build docker image and log
     docker build --force-rm -t $docker_image_name . | tee $log_dir/${docker_image_name//[\/]/_}.log
