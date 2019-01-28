@@ -52,7 +52,7 @@ fi
 
 for tag in $docker_tags
 do
-    docker_image_name=$(bash $working_directory/utils_docker.bash -t $tag -g $tag_base -p "local/")
+    docker_image_name="$(bash $working_directory/utils_docker.bash -t $tag -g $tag_base -p 'local/'')"
 
     printf "\n:: Start build for $docker_image_name\n"
 
