@@ -679,6 +679,7 @@ jobs:
           name: Load saved images from tar
           description: TODO
           command: |
+            docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD docker.io
             bash build/docker_publish.bash -g 3.8
 
       - run:
