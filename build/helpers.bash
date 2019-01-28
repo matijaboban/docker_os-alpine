@@ -145,7 +145,7 @@ tagDockerImage ()
     fi
 
     ## return tag command
-    echo "docker tag $source_name $destination_name"
+    docker tag $source_name $destination_name
 
     # publishDockerImage -d $destination_name
     # Emmit exit status. As the function is constructed for re-usablity

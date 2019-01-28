@@ -22,6 +22,8 @@ do
     esac
 done
 
+##
+image_name_base=$(yq -r ".docker.repoName" $config)
 
 # Get docker tags from config
 docker_tags=$(yq -r '.tags | map_values(keys) | to_entries[] | .key' $config)
@@ -37,7 +39,7 @@ do
     ## temp tag
     bash $wdir/utils_docker.bash tagDockerImage -s $docker_image_name
 
-    # docker images
-    # docker ps
+    docker images
+    docker ps
 
 done
