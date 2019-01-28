@@ -5,12 +5,12 @@ working_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pw
 
 
 ## checkMinBashVersion || TODO refactor
-if [ -n "$(bash $working_directory/utils_base.bash checkMinBashVersion)" ]
+chMinBash="$(bash $working_directory/utils_base.bash checkMinBashVersion)"
+if [[ -n $chMinBash ]]
 then
-    echo $(bash $working_directory/utils_base.bash checkMinBashVersion)
+    echo $chMinBash
     exit 1
 fi
-
 
 ## import helpers
 source $working_directory/helpers.bash
@@ -52,7 +52,7 @@ fi
 
 for tag in $docker_tags
 do
-    docker_image_name=$(generateImageNameAndTag -t $tag -g $tag_base -p "local/")
+    docker_image_name=$(bash $working_directory/utils_docker.bash -t $tag -g $tag_base -p "local/")
 
     printf "\n:: Start build for $docker_image_name\n"
 
