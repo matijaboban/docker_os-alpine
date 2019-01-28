@@ -7,11 +7,11 @@ working_directory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pw
 ## checkMinBashVersion || TODO refactor
 if [ -n "$(bash $working_directory/utils_base.bash checkMinBashVersion)" ]
 then
-    echo $(bash $working_directory/utils_base.bash checkMinBashVersion)
+    echo $?
     exit 1
 fi
 
-
+exit 1
 ## import helpers
 source $working_directory/helpers.bash
 
