@@ -146,17 +146,43 @@ tagDockerImage ()
     ## return tag command
     docker tag $source_name $destination_name
 
+    publishDockerImage -d $destination_name
     # Emmit exit status. As the function is constructed for re-usablity
     # it needs to exited ptoperly
     # exit 0
 }
 
 
-# publishDockerImage ()
-# {
-#     echo publishDockerImage
-#     exit 0
-# }
+publishDockerImage ()
+{
+    # define defaults
+    destination_base=matijaboban
+
+    # process options localy defined TODO desc
+    local OPTIND d
+    while getopts d: option
+    do
+        case "${option}"
+        in
+            d) destination_name=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$destination_name" ]]
+    then
+        echo "Required parameters not set."
+        exit 1
+    fi
+
+    docker push $destination_name
+
+    # Emmit exit status. As the function is constructed for re-usablity
+    # it needs to exited ptoperly
+    # exit 0
+}
+
 
 # ##
 # "$@"
