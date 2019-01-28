@@ -50,9 +50,13 @@ then
     mkdir -p $save_image_dir
 fi
 
+##
+image_name_base=$(yq -r ".docker.repoName" $config)
+
 for tag in $docker_tags
 do
-    docker_image_name="$(bash $wdir/utils_docker.bash generateImageNameAndTag -t $tag -g $tag_base -p local/)"
+
+    docker_image_name="$(bash $wdir/utils_docker.bash generateImageNameAndTag -b $image_name_base -t $tag -g $tag_base -p local/)"
 
     printf "\n:: Start build for $docker_image_name\n"
 

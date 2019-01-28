@@ -6,7 +6,7 @@ generateImageNameAndTag ()
 {
     # define defaults
     image_name_prefix=''
-    image_name_base=$(yq -r '.docker.repoName' $config)
+    image_name_base=''
     tag_base=null
     correct_underscore=true
 
@@ -23,6 +23,14 @@ generateImageNameAndTag ()
             u) correct_underscore=${OPTARG};;
         esac
     done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$image_name_base" ]]
+    then
+          echo "Required parameters not set."
+          exit 1
+    fi
 
     # blank the tag name when core is used
     # as when the core is used, its a bare tag
