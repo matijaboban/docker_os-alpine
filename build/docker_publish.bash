@@ -40,7 +40,7 @@ do
     bash $wdir/utils_docker.bash tagDockerImage -s $docker_image_name
 
     ## temp test
-    bash $wdir/utils_docker.bash runDockerOneOffCommand -i $(bash $wdir/utils_docker.bash getDockerImageID -n $docker_image_name) -c "cat /etc/os-release"
+    echo $(bash $wdir/utils_docker.bash runDockerOneOffCommand -i $(bash $wdir/utils_docker.bash getDockerImageID -n $docker_image_name) -c "cat /etc/os-release")
 done
 
     docker images
