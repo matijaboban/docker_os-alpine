@@ -196,7 +196,11 @@ runDockerOneOffCommand ()
     fi
 
     ## start docker from image
-    docker_id=$(docker run -d $image_id)
+    ## the -t parametar is important in the CircleCI env. as
+    ## not passing it in the background run will make the docker
+    ## not persistant/accesbel in the remote docker env. thats
+    ## utilized
+    docker_id=$(docker run -dt $image_id)
 
     ## run command in docker image
     command_output=$(docker exec $docker_id $command)
