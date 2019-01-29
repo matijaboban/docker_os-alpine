@@ -28,7 +28,7 @@ generateImageNameAndTag ()
     ##
     if [[ -z "$image_name_base" ]]
     then
-          echo "Required parameters not set."
+          echo "fn ${FUNCNAME[0]}: Required parameters not set."
           exit 1
     fi
 
@@ -103,7 +103,7 @@ tagDockerImage ()
     ##
     if [[ -z "$source_name" ]]
     then
-        echo "Required parameters not set."
+        echo "fn ${FUNCNAME[0]}: Required parameters not set."
         exit 1
     fi
 
@@ -142,9 +142,9 @@ getDockerImageID ()
 
     ## Handle required parameters not set
     ##
-    if [[ -z "$image_name" ||  -z "$image_tag" ]]
+    if [[ -z "$image_name" ]]
     then
-          echo "Required parameters not set."
+          echo "fn ${FUNCNAME[0]}: Required parameters not set."
           exit 1
     fi
 
@@ -191,7 +191,7 @@ runDockerOneOffCommand ()
     ##
     if [[ -z "$command" ||  -z "$image_id" ]]
     then
-          echo "Required parameters not set."
+          echo "fn ${FUNCNAME[0]}: Required parameters not set."
           exit 1
     fi
 
@@ -233,7 +233,7 @@ runDocker ()
     ##
     if [[ -z "$image_id" ]]
     then
-          echo "Required parameters not set."
+          echo "fn ${FUNCNAME[0]}: Required parameters not set."
           exit 1
     fi
 
@@ -270,7 +270,7 @@ killDocker ()
     ##
     if [[ -z "$docker_id" ]]
     then
-          echo "Required parameters not set."
+          echo "fn ${FUNCNAME[0]}: Required parameters not set."
           exit 1
     fi
 
