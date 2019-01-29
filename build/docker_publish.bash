@@ -43,3 +43,5 @@ do
     docker ps
 
 done
+
+# bash utils_base.bash getDockerImageID -n "local/os-alpine" -t s3.8-rust

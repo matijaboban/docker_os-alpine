@@ -25,6 +25,16 @@ checkMinBashVersion ()
 # bash --version | head -n 1 | grep version | awk -F ' ' '{print $4}'
 
 
+# docker images | grep local/os-alpine | grep 3.8-rust | awk '{ print $3 }'
+#
+# docker run -it d140030e95a8 cat /etc/os-release | grep VERSION_ID
+# docker run -it d140030e95a8 cat /etc/os-release | grep NAME
+# docker run -it d140030e95a8 cat /etc/os-release | grep PRETTY_NAME
+# docker run -it d140030e95a8 cat /etc/os-release | grep VERSION_ID | awk -F '=' '{print $2}'
+
+
+
+
 
 
 ## generate image name and tag

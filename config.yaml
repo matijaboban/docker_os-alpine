@@ -18,27 +18,27 @@ tags:
       - docker
       - git
     pip:
-  build:
-    apk:
-      - bash
-      - build-base
-      - ca-certificates
-      - coreutils
-      - cmake
-      - curl
-      - git
-      - jemalloc-dev
-      - jq
-      - linux-headers
-      - moreutils --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/
-      - py-pip
-      - tcl
-      - zip
-    pip:
-      - yq
+  # build:
+  #   apk:
+  #     - bash
+  #     - build-base
+  #     - ca-certificates
+  #     - coreutils
+  #     - cmake
+  #     - curl
+  #     - git
+  #     - jemalloc-dev
+  #     - jq
+  #     - linux-headers
+  #     - moreutils --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/
+  #     - py-pip
+  #     - tcl
+  #     - zip
+  #   pip:
+  #     - yq
   bash:
     apk:
       - bash
-  rust:
-    apk:
-      - rust
+  # rust:
+  #   apk:
+  #     - rust

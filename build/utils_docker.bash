@@ -119,11 +119,174 @@ tagDockerImage ()
     ## return tag command
     docker tag $source_name $destination_name
 
-    ## temp
+    ##
     docker push $destination_name
 
     # Emmit exit status. As the function is constructed for re-usablity
     # it needs to exited ptoperly
+    exit 0
+}
+
+getDockerImageID ()
+{
+    # process options localy defined TODO desc
+    local OPTIND n t
+    while getopts n:t: option
+    do
+        case "${option}"
+        in
+            n) image_name=${OPTARG};;
+            t) image_tag=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$image_name" ||  -z "$image_tag" ]]
+    then
+          echo "Required parameters not set."
+          exit 1
+    fi
+
+    ## extract image tag from image name, if tag isnt explicitly
+    ## passed
+    if [[ -z "$image_tag" ]]
+    then
+        IFS=':' read -r -a image_name_with_tag <<< "$image_name"
+        image_name=${image_name_with_tag[0]}
+        image_tag=${image_name_with_tag[1]}
+    fi
+
+    ## get docker image
+    image_id=$(docker images | grep $image_name | grep $image_tag | awk '{ print $3 }')
+
+    ## return null if no image id has been retreived
+    if [ -z "$image_id" ]
+    then
+        echo null
+        exit 0
+    fi
+
+    ## return Docke image
+    echo $image_id
+
+    exit 0
+}
+
+
+runDockerOneOffCommand ()
+{
+    # process options localy defined TODO desc
+    local OPTIND c i
+    while getopts c:i: option
+    do
+        case "${option}"
+        in
+            c) command=${OPTARG};;
+            i) image_id=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$command" ||  -z "$image_id" ]]
+    then
+          echo "Required parameters not set."
+          exit 1
+    fi
+
+    ## start docker from image
+    docker_id=$(docker run -d $image_id)
+
+    ## run command in docker image
+    command_output=$(docker exec $docker_id $command)
+
+    ## kill runnign docker
+    docker kill $docker_id
+
+    ## return null if command has no output
+    if [ -z "$command_output" ]
+    then
+        echo null
+        exit 0
+    fi
+
+    ## return command output
+    echo $command_output
+
+    exit 0
+}
+
+runDocker ()
+{
+    # process options localy defined TODO desc
+    local OPTIND c i
+    while getopts c:i: option
+    do
+        case "${option}"
+        in
+            i) image_id=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$image_id" ]]
+    then
+          echo "Required parameters not set."
+          exit 1
+    fi
+
+    ## start docker from image
+    docker_id=$(docker run -d $image_id)
+
+    ## return null if docker_id has no output
+    if [ -z "$docker_id" ]
+    then
+        echo null
+        exit 0
+    fi
+
+    ## return docker id
+    echo $docker_id
+
+    exit 0
+}
+
+
+killDocker ()
+{
+    # process options localy defined TODO desc
+    local OPTIND c i
+    while getopts c:i: option
+    do
+        case "${option}"
+        in
+            i) docker_id=${OPTARG};;
+        esac
+    done
+
+    ## Handle required parameters not set
+    ##
+    if [[ -z "$docker_id" ]]
+    then
+          echo "Required parameters not set."
+          exit 1
+    fi
+
+    ## start docker from image
+    docker_id=$(docker kill $docker_id)
+
+    ## return null if docker_id has no output
+    if [ -z "$docker_id" ]
+    then
+        echo null
+        exit 0
+    fi
+
+    ## return docker id
+    echo $docker_id
+
     exit 0
 }
 
