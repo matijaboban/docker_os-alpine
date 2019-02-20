@@ -1,0 +1,7 @@
+{
+  "schema": "DEFAULT_SAFE_SCHEMA",
+  "ignore": [
+        "node_modules/**/*.yaml",
+        "node_modules/**/*.yml"
+    ]
+}

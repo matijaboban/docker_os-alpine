@@ -1,0 +1,15 @@
+# General
+.DS_Store
+.env
+
+# JetBrains project files
+.idea
+
+# NPM
+node_modules
+
+# Unit/feature testing
+test/_reports
+
+## TODO
+build/compiled/*.sh

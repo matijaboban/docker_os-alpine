@@ -1,0 +1,44 @@
+docker:
+  registry: docker.io
+  repoName: os-alpine
+
+core:
+  name: alpine
+  versions:
+    - 3.8
+
+## notes: tag names should use underscores instead of hyphens due to jq parsing
+## this is subsequenrtly corrected within scripts TODO desc
+tags:
+  core:
+    apk:
+    pip:
+  docker:
+    apk:
+      - docker
+      - git
+    pip:
+  # build:
+  #   apk:
+  #     - bash
+  #     - build-base
+  #     - ca-certificates
+  #     - coreutils
+  #     - cmake
+  #     - curl
+  #     - git
+  #     - jemalloc-dev
+  #     - jq
+  #     - linux-headers
+  #     - moreutils --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/
+  #     - py-pip
+  #     - tcl
+  #     - zip
+  #   pip:
+  #     - yq
+  bash:
+    apk:
+      - bash
+  # rust:
+  #   apk:
+  #     - rust
